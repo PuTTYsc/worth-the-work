@@ -88,17 +88,6 @@ details summary{cursor:pointer;color:var(--mute);margin-top:6px}
   <button class="primary" id="add">Start the countdown</button>
   <div id="err" class="rate" style="color:var(--warn)"></div>
 </section>
-
-<section id="gsec">
-  <h2>Google Drive sync</h2>
-  <div class="row"><label style="flex:1 1 100%">Google Client ID<input id="cid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" spellcheck="false"></label></div>
-  <div class="acts" style="margin:12px 0 8px">
-    <button class="primary" id="gconn">Connect Google Drive</button>
-    <button id="gsync" hidden>Sync now</button>
-    <button id="gdis" hidden>Disconnect</button>
-  </div>
-  <div class="rate" id="gstat">Not connected. Data is stored in this browser only.</div>
-</section>
 </div>
 <div class="col">
 <section>
@@ -118,6 +107,17 @@ details summary{cursor:pointer;color:var(--mute);margin-top:6px}
   <div class="sum" id="sum"></div>
   <details><summary>Show past items</summary><div id="hist"></div></details>
   <div style="margin-top:14px"><button class="danger" id="clearHist">Clear all history</button></div>
+</section>
+
+<section id="gsec">
+  <h2>Google Drive sync</h2>
+  <div class="row"><label style="flex:1 1 100%">Google Client ID<input id="cid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" spellcheck="false"></label></div>
+  <div class="acts" style="margin:12px 0 8px">
+    <button class="primary" id="gconn">Connect Google Drive</button>
+    <button id="gsync" hidden>Sync now</button>
+    <button id="gdis" hidden>Disconnect</button>
+  </div>
+  <div class="rate" id="gstat">Not connected. Data is stored in this browser only.</div>
 </section>
 </div>
 </main>
