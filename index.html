@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Worth the Work</title>
+<style>
+:root{color-scheme:dark;--bg:#36536d;--card:#2b435a;--ink:#f3f1ef;--mute:#a9bccb;--line:#4a6781;--acc:#e5413c;--accInk:#fff;--hi:#ff8a85;--ok:#7ddc9a;--warn:#ff8a85;--bar:#1f3144}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 18px 60px}
+.col{min-width:0}
+@media (min-width:900px){
+.hero .in,main{max-width:1180px}
+.hero .in{padding:32px 28px 26px}
+h1{font-size:2.4rem}
+main{display:grid;grid-template-columns:minmax(320px,400px) 1fr;gap:0 22px;align-items:start;padding:26px 28px 60px}
+}
+.hero{background:#ece9e7}
+.hero .in{max-width:760px;margin:0 auto;padding:28px 18px 22px}
+h1{font:800 1.9rem/1.1 system-ui,-apple-system,"Segoe UI",sans-serif;text-transform:uppercase;color:#e5413c;margin:0 0 8px}
+.sub{color:#2a3a3a;margin:0;max-width:56ch}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:18px}
+h2{font:600 1.05rem/1.2 system-ui,sans-serif;margin:0 0 12px}
+.row{display:flex;flex-wrap:wrap;gap:12px}
+label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mute);gap:4px;flex:1 1 140px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px;width:100%}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 14px}
+button.danger{color:var(--hi);border-color:var(--hi)}
+button.primary{background:var(--acc);color:var(--accInk);border-color:var(--acc);font-weight:600}
+.rate{margin-top:12px;color:var(--mute);font-size:.9rem}
+.rate b{color:var(--ink)}
+.item{border-top:1px solid var(--line);padding:16px 0}
+.item:first-child{border-top:0;padding-top:4px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.name{font-weight:600;font-size:1.05rem;overflow-wrap:anywhere}
+.price{color:var(--mute);white-space:nowrap}
+.work{font:800 2.2rem/1.1 system-ui,-apple-system,"Segoe UI",sans-serif;margin:8px 0 2px;color:var(--hi)}
+.alt{color:var(--mute);font-size:.88rem}
+.clock{margin-top:12px;font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:600}
+.clock.warn{color:var(--warn)}.clock.ok{color:var(--ok)}
+.bar{height:6px;background:var(--bar);border-radius:3px;margin:8px 0 12px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.done{opacity:.7}.tag{font-size:.8rem;color:var(--mute)}
+.empty{color:var(--mute);margin:0}
+.sum{display:flex;gap:24px;flex-wrap:wrap;color:var(--mute);font-size:.9rem}
+.sum b{display:block;font:800 1.4rem system-ui,sans-serif;color:var(--ink)}
+details summary{cursor:pointer;color:var(--mute);margin-top:6px}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .6s}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+<h1>Worth the Work</h1>
+<p class="sub">Every price is hours of your life. Add what you want to buy, see what it costs in work, then wait out the countdown before you touch your wallet.</p>
+</div></header>
+<main>
+<div class="col">
+<section>
+  <h2>Your pay</h2>
+  <div class="row">
+    <label>Amount<input id="pay" type="number" min="0" step="any" placeholder="4200"></label>
+    <label>Per<select id="per"><option value="month">Month</option><option value="year">Year</option></select></label>
+    <label>Hours per week<input id="hpw" type="number" min="1" max="100" step="any" value="40"></label>
+    <label>Currency symbol<input id="cur" maxlength="4" value="$"></label>
+  </div>
+  <div class="rate" id="rate"></div>
+</section>
+
+<section>
+  <h2>Something you want</h2>
+  <div class="row">
+    <label style="flex:2 1 200px">Item<input id="iname" placeholder="Noise-cancelling headphones"></label>
+    <label>Price<input id="iprice" type="number" min="0" step="any" placeholder="349"></label>
+    <label>Wait before buying
+      <select id="iwait">
+        <option value="auto">Match the work time</option>
+        <option value="1">1 day</option><option value="3">3 days</option>
+        <option value="7">1 week</option><option value="14">2 weeks</option>
+        <option value="21">3 weeks</option><option value="30">30 days</option>
+        <option value="60">60 days</option><option value="90">90 days</option>
+      </select>
+    </label>
+  </div>
+  <p class="rate" style="margin:10px 0 12px">"Match the work time" gives one calendar day per working day it takes to earn the price, minimum one day.</p>
+  <button class="primary" id="add">Start the countdown</button>
+  <div id="err" class="rate" style="color:var(--warn)"></div>
+</section>
+
+<section id="gsec">
+  <h2>Google Drive sync</h2>
+  <div class="row"><label style="flex:1 1 100%">Google Client ID<input id="cid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" spellcheck="false"></label></div>
+  <div class="acts" style="margin:12px 0 8px">
+    <button class="primary" id="gconn">Connect Google Drive</button>
+    <button id="gsync" hidden>Sync now</button>
+    <button id="gdis" hidden>Disconnect</button>
+  </div>
+  <div class="rate" id="gstat">Not connected. Data is stored in this browser only.</div>
+</section>
+</div>
+<div class="col">
+<section>
+  <h2>Waiting list</h2>
+  <div id="active"></div>
+</section>
+
+<section id="buySec" hidden>
+  <h2>Purchases</h2>
+  <label style="max-width:160px;margin-bottom:14px">Year<select id="year"></select></label>
+  <div class="sum" id="ysum" style="margin-bottom:8px"></div>
+  <div id="blist"></div>
+</section>
+
+<section id="histSec" hidden>
+  <h2>History</h2>
+  <div class="sum" id="sum"></div>
+  <details><summary>Show past items</summary><div id="hist"></div></details>
+  <div style="margin-top:14px"><button class="danger" id="clearHist">Clear all history</button></div>
+</section>
+</div>
+</main>
+
+<script>
+const KEY="worth-the-work-v1", DAY=86400000;
+const DEFAULT_CLIENT_ID=""; // optional: paste your Google Client ID here so every device has it
+let S={pay:"",per:"month",hpw:40,cur:"$",items:[],sU:0,deleted:{},clientId:"",gOn:false};
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+S.deleted=S.deleted||{};
+S.items.forEach(i=>{if(!i.u)i.u=i.closed||i.created});
+if(!S.sU&&S.pay)S.sU=1;
+const $=id=>document.getElementById(id);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const commit=()=>{save();queueSync()};
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>S.cur+n.toLocaleString(undefined,{maximumFractionDigits:2});
+const num=(n,d=1)=>Number(n.toFixed(d)).toLocaleString();
+
+function hourly(){
+  const p=parseFloat(S.pay),h=parseFloat(S.hpw);
+  if(!(p>0)||!(h>0))return 0;
+  const yearly=S.per==="year"?p:p*12;
+  return yearly/(52*h);
+}
+function workHours(price){const r=hourly();return r?price/r:0}
+function describe(hrs){
+  const days=hrs/8, months=hrs/(parseFloat(S.hpw)*52/12);
+  let big;
+  if(hrs<8)big=num(hrs)+(hrs===1?" hour":" hours");
+  else if(months<1)big=num(days)+(Math.round(days*10)/10===1?" workday":" workdays");
+  else big=num(months)+(Math.round(months*10)/10===1?" month":" months");
+  return {big,alt:`${num(hrs)} hours · ${num(days)} workdays · ${num(months,2)} months of work`};
+}
+function waitDays(it){return it.wait==="auto"?Math.max(1,Math.ceil(it.hours/8)):+it.wait}
+function left(ms){
+  const s=Math.max(0,Math.floor(ms/1000));
+  const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+  const w=Math.floor(d/7);
+  return (w?w+"w ":"")+(d%7)+"d "+String(h).padStart(2,"0")+"h "+String(m).padStart(2,"0")+"m "+String(x).padStart(2,"0")+"s";
+}
+
+function renderPay(){
+  const r=hourly();
+  $("rate").innerHTML=r?`That is <b>${fmt(r)}</b> an hour, <b>${fmt(r*8)}</b> a workday.`:"Enter your pay to see what things cost in work.";
+}
+function itemHTML(it,live){
+  const d=describe(it.hours),due=it.created+it.days*DAY,now=Date.now();
+  const ready=now>=due;
+  let clock="",bar="",acts="";
+  if(it.status==="open"){
+    const pct=Math.min(100,(now-it.created)/(due-it.created)*100);
+    clock=ready?`<div class="clock ok">Countdown finished. You may buy it now.</div>`
+      :`<div class="clock warn" data-due="${due}">${left(due-now)}</div>`;
+    bar=`<div class="bar"><i style="width:${pct}%" data-start="${it.created}" data-end="${due}"></i></div>`;
+    acts=ready?`<button class="primary" data-a="bought" data-id="${it.id}">I bought it</button><button data-a="dropped" data-id="${it.id}">I don't want it anymore</button>`
+      :`<button data-a="dropped" data-id="${it.id}">Drop it</button>`;
+  }else{
+    clock=`<div class="tag">${it.status==="bought"?"Bought":"Dropped"} on ${new Date(it.closed).toLocaleDateString()}</div>`;
+    acts=`<button class="danger" data-a="remove" data-id="${it.id}">Remove</button>`;
+  }
+  return `<div class="item ${it.status!=="open"?"done":""}" data-id="${it.id}">
+    <div class="top"><span class="name">${esc(it.name)}</span><span class="price">${fmt(it.price)}</span></div>
+    <div class="work">${d.big}</div><div class="alt">${d.alt}</div>
+    ${clock}${bar}<div class="acts">${acts}</div></div>`;
+}
+let yearSel=null;
+function renderBuys(){
+  const all=S.items.filter(i=>i.status==="bought");
+  $("buySec").hidden=!all.length;
+  if(!all.length)return;
+  const yr=i=>new Date(i.closed).getFullYear();
+  const years=[...new Set(all.map(yr))].sort((a,b)=>b-a);
+  if(!years.includes(+yearSel))yearSel=years[0];
+  $("year").innerHTML=years.map(y=>`<option ${y==yearSel?"selected":""}>${y}</option>`).join("");
+  const ys=all.filter(i=>yr(i)==yearSel).sort((a,b)=>b.closed-a.closed);
+  const hrs=ys.reduce((s,i)=>s+i.hours,0),spent=ys.reduce((s,i)=>s+i.price,0);
+  const yearHrs=(parseFloat(S.hpw)||40)*52;
+  $("ysum").innerHTML=`<div><b>${fmt(spent)}</b>spent in ${yearSel}</div><div><b>${num(hrs)} h</b>of work</div><div><b>${num(hrs/8)} days</b>of work</div><div><b>${num(hrs/yearHrs*100)}%</b>of a working year</div>`;
+  $("blist").innerHTML=ys.map(i=>`<div class="item"><div class="top"><span class="name">${esc(i.name)}</span><span class="price">${fmt(i.price)}</span></div><div class="alt">${new Date(i.closed).toLocaleDateString()} · cost ${num(i.hours)} hours, ${num(i.hours/8)} workdays, ${num(i.hours/yearHrs*100,2)}% of a working year</div><div class="acts" style="margin-top:8px"><button class="danger" data-a="remove" data-id="${i.id}">Remove</button></div></div>`).join("");
+}
+function render(){
+  renderPay();
+  renderBuys();
+  const open=S.items.filter(i=>i.status==="open").sort((a,b)=>(a.created+a.days*DAY)-(b.created+b.days*DAY));
+  $("active").innerHTML=open.length?open.map(i=>itemHTML(i)).join(""):`<p class="empty">Nothing waiting. Add something you are tempted by.</p>`;
+  const past=S.items.filter(i=>i.status!=="open").sort((a,b)=>b.closed-a.closed);
+  $("histSec").hidden=!past.length;
+  if(past.length){
+    const dropped=past.filter(i=>i.status==="dropped");
+    const savedMoney=dropped.reduce((s,i)=>s+i.price,0),savedHrs=dropped.reduce((s,i)=>s+i.hours,0);
+    const spent=past.filter(i=>i.status==="bought").reduce((s,i)=>s+i.price,0);
+    $("sum").innerHTML=`<div><b>${fmt(savedMoney)}</b>not spent</div><div><b>${num(savedHrs)} h</b>of work kept</div><div><b>${fmt(spent)}</b>spent after waiting</div>`;
+    $("hist").innerHTML=past.map(i=>itemHTML(i)).join("");
+  }
+}
+function tick(){
+  const now=Date.now();let flip=false;
+  document.querySelectorAll("[data-due]").forEach(el=>{
+    const due=+el.dataset.due;
+    if(now>=due)flip=true;else el.textContent=left(due-now);
+  });
+  document.querySelectorAll(".bar i").forEach(el=>{
+    const a=+el.dataset.start,b=+el.dataset.end;
+    el.style.width=Math.min(100,(now-a)/(b-a)*100)+"%";
+  });
+  if(flip)render();
+}
+
+["pay","per","hpw","cur"].forEach(k=>{
+  $(k).value=S[k];
+  $(k).addEventListener("input",()=>{S[k]=$(k).value;S.sU=Date.now();commit();render()});
+});
+$("add").onclick=()=>{
+  const name=$("iname").value.trim(),price=parseFloat($("iprice").value);
+  if(!(hourly()>0)){$("err").textContent="Enter your pay and weekly hours first.";return}
+  if(!name||!(price>0)){$("err").textContent="Give the item a name and a price above zero.";return}
+  $("err").textContent="";
+  const it={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),name,price,hours:workHours(price),wait:$("iwait").value,created:Date.now(),status:"open"};
+  it.days=waitDays(it);
+  it.u=it.created;S.items.push(it);commit();
+  $("iname").value="";$("iprice").value="";render();
+};
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-a]");if(!b)return;
+  const it=S.items.find(i=>i.id===b.dataset.id);if(!it)return;
+  if(b.dataset.a==="remove"){
+    if(confirm(`Remove "${it.name}" permanently?`)){S.deleted[it.id]=Date.now();S.items=S.items.filter(i=>i.id!==it.id);commit();render()}
+    return;
+  }
+  it.status=b.dataset.a;it.closed=Date.now();it.u=it.closed;commit();render();
+});
+$("clearHist").onclick=()=>{
+  const n=S.items.filter(i=>i.status!=="open").length;
+  if(n&&confirm(`Permanently delete all ${n} bought and dropped items? Active countdowns are kept.`)){
+    const t=Date.now();S.items.filter(i=>i.status!=="open").forEach(i=>S.deleted[i.id]=t);
+    S.items=S.items.filter(i=>i.status==="open");commit();render();
+  }
+};
+$("year").onchange=e=>{yearSel=e.target.value;renderBuys()};
+/* ---- Google Drive sync ---- */
+const SCOPE="https://www.googleapis.com/auth/drive.file",FILE="worth-the-work-data.json",TOKKEY=KEY+"-tok";
+let tok=null,tokExp=0,tc=null,syncing=false,again=false,timer=null;
+const gstat=t=>{$("gstat").textContent=t};
+const cid=()=>($("cid").value||S.clientId||DEFAULT_CLIENT_ID||"").trim();
+function gui(){$("gsync").hidden=!tok;$("gdis").hidden=!S.gOn}
+function syncInputs(){["pay","per","hpw","cur"].forEach(k=>{if(document.activeElement!==$(k))$(k).value=S[k]})}
+function payload(){return {v:1,pay:S.pay,per:S.per,hpw:S.hpw,cur:S.cur,sU:S.sU,items:S.items,deleted:S.deleted}}
+function merge(r){
+  if((r.sU||0)>(S.sU||0)){["pay","per","hpw","cur"].forEach(k=>{if(r[k]!==undefined)S[k]=r[k]});S.sU=r.sU;syncInputs()}
+  const del=Object.assign({},r.deleted||{});
+  for(const id in S.deleted)del[id]=Math.max(del[id]||0,S.deleted[id]);
+  const map={};
+  [...(r.items||[]),...S.items].forEach(it=>{const u=it.u||it.created,c=map[it.id];if(!c||u>(c.u||c.created))map[it.id]=it});
+  S.items=Object.values(map).filter(it=>!(del[it.id]&&del[it.id]>=(it.u||it.created)));
+  S.deleted=del;
+}
+async function dFetch(url,opt={}){
+  opt.headers=Object.assign({Authorization:"Bearer "+tok},opt.headers||{});
+  const r=await fetch(url,opt);
+  if(r.status===401){tok=null;try{localStorage.removeItem(TOKKEY)}catch(e){}gui();throw new Error("auth")}
+  if(!r.ok)throw new Error("Drive error "+r.status);
+  return r;
+}
+async function findFile(){
+  const q=encodeURIComponent(`name='${FILE}' and trashed=false`);
+  const r=await dFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)&orderBy=createdTime`);
+  const j=await r.json();return j.files&&j.files[0];
+}
+async function createFile(json){
+  const b="wtw"+Date.now();
+  const body=`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({name:FILE,mimeType:"application/json"})}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${json}\r\n--${b}--`;
+  await dFetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",{method:"POST",headers:{"Content-Type":"multipart/related; boundary="+b},body});
+}
+async function sync(){
+  if(Date.now()>tokExp)tok=null;
+  if(!tok){gui();return}
+  if(syncing){again=true;return}
+  syncing=true;gstat("Syncing...");
+  try{
+    const f=await findFile();
+    if(f){const r=await (await dFetch(`https://www.googleapis.com/drive/v3/files/${f.id}?alt=media`)).json();merge(r);save();render()}
+    const json=JSON.stringify(payload());
+    if(f)await dFetch(`https://www.googleapis.com/upload/drive/v3/files/${f.id}?uploadType=media`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:json});
+    else await createFile(json);
+    gstat("Synced at "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+". File: "+FILE+" in your Drive.");
+  }catch(e){gstat(e.message==="auth"?"Session expired. Tap Connect Google Drive.":"Sync failed: "+e.message)}
+  finally{syncing=false;if(again){again=false;sync()}}
+}
+function queueSync(){if(!tok)return;clearTimeout(timer);timer=setTimeout(sync,1200)}
+function onTok(r){
+  if(r.error){gstat("Google error: "+r.error);return}
+  tok=r.access_token;tokExp=Date.now()+(r.expires_in-60)*1000;
+  try{localStorage.setItem(TOKKEY,JSON.stringify({t:tok,e:tokExp}))}catch(e){}
+  S.gOn=true;save();gui();sync();
+}
+function initGis(){
+  if(!window.google||!cid())return;
+  tc=google.accounts.oauth2.initTokenClient({client_id:cid(),scope:SCOPE,callback:onTok,
+    error_callback:e=>gstat("Sign-in did not finish ("+(e.type||"error")+"). Tap Connect Google Drive.")});
+}
+$("cid").value=S.clientId||DEFAULT_CLIENT_ID||"";
+$("gconn").onclick=()=>{
+  if(!cid()){gstat("Paste your Google Client ID first.");return}
+  if(!window.google){gstat("Google sign-in script has not loaded. Check your connection and try again.");return}
+  S.clientId=cid();save();initGis();tc.requestAccessToken();
+};
+$("gsync").onclick=sync;
+$("gdis").onclick=()=>{
+  if(tok&&window.google)google.accounts.oauth2.revoke(tok);
+  tok=null;try{localStorage.removeItem(TOKKEY)}catch(e){}
+  S.gOn=false;save();gui();gstat("Disconnected. Data stays in this browser; the Drive file is untouched.");
+};
+try{const k=JSON.parse(localStorage.getItem(TOKKEY)||"null");if(k&&k.e>Date.now()){tok=k.t;tokExp=k.e}}catch(e){}
+if(!tok&&S.gOn)gstat("Tap Connect Google Drive to resume syncing.");
+gui();
+render();setInterval(tick,1000);
+if(tok)sync();
+</script>
+<script src="https://accounts.google.com/gsi/client" async defer onload="initGis()"></script>
+</body>
+</html>
